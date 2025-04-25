@@ -16,26 +16,31 @@ class CreateProgram(Resource):
         doctor_id = data.get('doctor_id')
 
         if not name or not doctor_id:
-            return jsonify({'error': 'Program name and doctor_id are required'}), 400
+            return {'error': 'Program name and doctor_id are required'}, 400
 
-        existing = Program.query.filter_by(name=name).first()
+        name = data.get('name', '').strip().lower()
+        existing = Program.query.filter(db.func.lower(Program.name) == name).first()
         if existing:
-            return jsonify({'error': 'Program already exists'}), 409
+            return {'error': 'Program already exists'}, 409
 
         doctor = User.query.get(doctor_id)
         if not doctor:
-            return jsonify({'error': 'Doctor not found'}), 404
+            return {'error': 'Doctor not found'}, 404
 
         program = Program(name=name, description=description, doctor_id=doctor_id)
         db.session.add(program)
         db.session.commit()
 
-        return jsonify({'message': 'Program created successfully', 'program': {
-            'id': program.id,
-            'name': program.name,
-            'description': program.description,
-            'doctor_id': program.doctor_id
-        }}), 201
+        return {
+            'message': 'Program created successfully',
+            'program': {
+                'id': program.id,
+                'name': program.name,
+                'description': program.description,
+                'doctor_id': program.doctor_id
+            }
+        }, 201
+
 
 # === Fetch Health Program by Doctor ===
 class GetProgramsByDoctor(Resource):
