@@ -15,24 +15,26 @@ class RegisterClient(Resource):
         gender = data.get('gender')
 
         if not name or not age or not gender:
-            return jsonify({'error': 'Name, age, and gender are required'}), 400
+            return {'error': 'Name, age, and gender are required'}, 400
 
-        client = Client(name=name, age=age, gender=gender)
+        client = Client(full_name=name, age=age, gender=gender)  # ✅ fix: full_name not name
         db.session.add(client)
         db.session.commit()
 
-        return jsonify({
+        return {
             'message': 'Client registered successfully',
             'client': {
                 'id': client.id,
-                'name': client.full_name
-,
+                'name': client.full_name,
                 'age': client.age,
                 'gender': client.gender
             }
-        }), 201
+        }, 201
+
 
 # === Enroll Client in Programs ===
+from flask import jsonify
+
 class EnrollClient(Resource):
     @jwt_required()
     def post(self):
@@ -40,32 +42,38 @@ class EnrollClient(Resource):
         client_id = data.get('client_id')
         program_ids = data.get('program_ids')
 
+        # Validate input
         if not client_id or not program_ids:
             return jsonify({'error': 'client_id and program_ids are required'}), 400
 
+        # Find the client by ID
         client = Client.query.get(client_id)
         if not client:
             return jsonify({'error': 'Client not found'}), 404
 
         enrolled_programs = []
+
+        # Iterate over the program IDs and enroll the client
         for pid in program_ids:
             program = Program.query.get(pid)
             if not program:
-                continue  # skip if program doesn't exist
+                continue  # Skip if program doesn't exist
 
-            existing = Enrollment.query.filter_by(client_id=client.id, program_id=program.id).first()
-            if not existing:
+            existing_enrollment = Enrollment.query.filter_by(client_id=client.id, program_id=program.id).first()
+            if not existing_enrollment:
                 enrollment = Enrollment(client_id=client.id, program_id=program.id)
                 db.session.add(enrollment)
                 enrolled_programs.append(program.name)
 
         db.session.commit()
 
+        # Return the response as JSON
         return jsonify({
             'message': 'Client enrolled in selected programs successfully',
             'client_id': client.id,
             'enrolled_programs': enrolled_programs
         }), 200
+
 
 
 # === Search Clients ===
@@ -77,18 +85,16 @@ class SearchClients(Resource):
         if not query:
             return jsonify({'error': 'Search query is required'}), 400
 
-        results = Client.query.filter(client.full_name
-.ilike(f'%{query}%')).all()
+        results = Client.query.filter(Client.full_name.ilike(f'%{query}%')).all()
 
         clients = [{
             'id': client.id,
-            'name': client.full_name
-,
+            'name': client.full_name,
             'age': client.age,
             'gender': client.gender
         } for client in results]
 
-        return jsonify({
+        return ({
             'count': len(clients),
             'results': clients
         }), 200
@@ -113,12 +119,11 @@ class GetClientProfile(Resource):
 
         return jsonify({
             'id': client.id,
-            'name': client.full_name
-,
+            'name': client.full_name,
             'age': client.age,
             'gender': client.gender,
             'programs': programs
-        }), 200
+        })
 
 # ===Fetch all clients and their programs===
 class GetAllClients(Resource):
@@ -131,8 +136,7 @@ class GetAllClients(Resource):
             programs = [{'id': p.id, 'name': p.name} for p in client.programs]
             client_data = {
                 'id': client.id,
-                'name': client.full_name
-,
+                'name': client.full_name,
                 'age': client.age,
                 'gender': client.gender,
                 'programs': programs
