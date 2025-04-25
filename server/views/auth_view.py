@@ -3,6 +3,7 @@ from models import User, db, TokenBlocklist
 from flask import Flask, request, jsonify
 from flask_restful import Resource
 from datetime import datetime, timezone
+from flask_restful import reqparse
 
 
 #===Register a new doctor===
