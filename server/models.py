@@ -60,4 +60,8 @@ class Client(db.Model):
 
     enrollments = db.relationship('Enrollment', backref='client', cascade='all, delete-orphan')
 
+    @property
+    def programs(self):
+        return [enrollment.program for enrollment in self.enrollments]
+
 
