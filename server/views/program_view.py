@@ -84,7 +84,7 @@ class GetAllPrograms(Resource):
         for program in programs:
             clients = [{
                 'id': e.client.id,
-                'name': e.client.name,
+                'name': e.client.full_name,
                 'age': e.client.age,
                 'gender': e.client.gender
             } for e in program.enrollments]

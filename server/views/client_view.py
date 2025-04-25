@@ -25,7 +25,8 @@ class RegisterClient(Resource):
             'message': 'Client registered successfully',
             'client': {
                 'id': client.id,
-                'name': client.name,
+                'name': client.full_name
+,
                 'age': client.age,
                 'gender': client.gender
             }
@@ -76,11 +77,13 @@ class SearchClients(Resource):
         if not query:
             return jsonify({'error': 'Search query is required'}), 400
 
-        results = Client.query.filter(Client.name.ilike(f'%{query}%')).all()
+        results = Client.query.filter(client.full_name
+.ilike(f'%{query}%')).all()
 
         clients = [{
             'id': client.id,
-            'name': client.name,
+            'name': client.full_name
+,
             'age': client.age,
             'gender': client.gender
         } for client in results]
@@ -110,7 +113,8 @@ class GetClientProfile(Resource):
 
         return jsonify({
             'id': client.id,
-            'name': client.name,
+            'name': client.full_name
+,
             'age': client.age,
             'gender': client.gender,
             'programs': programs
@@ -127,7 +131,8 @@ class GetAllClients(Resource):
             programs = [{'id': p.id, 'name': p.name} for p in client.programs]
             client_data = {
                 'id': client.id,
-                'name': client.name,
+                'name': client.full_name
+,
                 'age': client.age,
                 'gender': client.gender,
                 'programs': programs

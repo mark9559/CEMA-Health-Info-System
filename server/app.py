@@ -1,24 +1,33 @@
-from models import Client, Program, Enrollment, User, db
-from flask import Flask, request, jsonify
+import os
 from flask_sqlalchemy import SQLAlchemy
+from models import  db, TokenBlocklist
+from flask import Flask
+from flask_migrate import Migrate
+
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager,jwt_required, get_jwt_identity
-from views import *
+from flask_jwt_extended import JWTManager
 from datetime import timedelta
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api
+from dotenv import load_dotenv
+from views import *
+
+load_dotenv()
 
 app = Flask(__name__)
+api = Api(app)
 CORS(app)  # Enable CORS for external systems
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
-api = Api(app)
-jwt = JWTManager(app)
 
-db = SQLAlchemy(app)
+jwt = JWTManager(app)
+jwt.init_app(app)
+db.init_app(app)
+#db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Custom token validation handler
 @jwt.token_in_blocklist_loader
