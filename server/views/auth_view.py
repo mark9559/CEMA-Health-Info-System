@@ -5,6 +5,36 @@ from flask_restful import Resource
 from datetime import datetime, timezone
 
 
+#===Register a new doctor===
+class RegisterDoctor(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', required=True, help='Username is required')
+        parser.add_argument('full_name', required=True, help='Full name is required')
+        parser.add_argument('password', required=True, help='Password is required')
+
+        data = parser.parse_args()
+
+        username = data['username']
+        full_name = data['full_name']
+        password = data['password']
+
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            return {'error': 'Username already exists'}, 409
+
+        new_user = User(username=username, full_name=full_name)
+        new_user.set_password(password)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return {
+            'message': 'User registered successfully',
+            'user': {'id': new_user.id, 'username': new_user.username}
+        }, 201
+
+
 # Login User
 class Login(Resource):
     def post(self):
