@@ -17,7 +17,7 @@ class RegisterClient(Resource):
         if not name or not age or not gender:
             return {'error': 'Name, age, and gender are required'}, 400
 
-        client = Client(full_name=name, age=age, gender=gender)  # ✅ fix: full_name not name
+        client = Client(full_name=name, age=age, gender=gender) 
         db.session.add(client)
         db.session.commit()
 
@@ -31,6 +31,50 @@ class RegisterClient(Resource):
             }
         }, 201
 
+#===Update client's details===
+class UpdateClient(Resource):
+    @jwt_required()
+    def put(self, client_id):
+        client = Client.query.get(client_id)
+        if not client:
+            return {'error': 'Client not found'}, 404
+
+        data = request.get_json()
+        name = data.get('name')
+        age = data.get('age')
+        gender = data.get('gender')
+
+        if name:
+            client.full_name = name
+        if age:
+            client.age = age
+        if gender:
+            client.gender = gender
+
+        db.session.commit()
+
+        return {
+            'message': 'Client updated successfully',
+            'client': {
+                'id': client.id,
+                'name': client.full_name,
+                'age': client.age,
+                'gender': client.gender
+            }
+        }, 200
+
+#===Delete a client===
+class DeleteClient(Resource):
+    @jwt_required()
+    def delete(self, client_id):
+        client = Client.query.get(client_id)
+        if not client:
+            return {'error': 'Client not found'}, 404
+
+        db.session.delete(client)
+        db.session.commit()
+
+        return {'message': 'Client deleted successfully'}, 200
 
 # === Enroll Client in Programs ===
 from flask import jsonify
