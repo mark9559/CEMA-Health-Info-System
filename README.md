@@ -102,8 +102,11 @@ python3 app.py
 
 ###  Doctors
 
+- Endpoints related to doctor management. You can register a new doctor retrieve, update, and delete doctor records.
+
 | Method | Endpoint | Description |
 | :---- | :---- | :---- |
+| POST | `/doctors/register` | Register a new doctor |
 | GET | `/doctors` | Get all doctors |
 | PUT | `/doctors/<int:doctor_id>` | Update doctor details |
 | DELETE | `/doctors/<int:doctor_id>` | Delete a doctor |
@@ -111,6 +114,8 @@ python3 app.py
 ---
 
 ###  Programs
+
+- Endpoints related to health program management. You can create, update, fetch, or delete programs.
 
 | Method | Endpoint | Description |
 | :---- | :---- | :---- |
@@ -123,9 +128,13 @@ python3 app.py
 
 ###  Authentication
 
+- Endpoints related to user authentication using JWT. Secure your requests with access tokens.
+
 | Method | Endpoint | Description |
 | :---- | :---- | :---- |
 | POST | `/login` | Log in and get JWT access token |
+| GET | `/user` | Getting an authenticated user |
+| DELETE | `/logout` | Log out a user |
 
 ---
 
