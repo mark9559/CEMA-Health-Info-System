@@ -89,6 +89,8 @@ python3 app.py
 
 ###  Clients
 
+- Endpoints related to client management. You can register, update, search, enroll, or remove clients from programs.
+
 | Method | Endpoint | Description |
 | :---- | :---- | :---- |
 | POST | `/clients/register` | Register a new client |
