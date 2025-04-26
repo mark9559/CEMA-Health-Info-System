@@ -47,11 +47,14 @@ api.add_resource(UpdateDoctor, '/doctors/<int:doctor_id>')
 api.add_resource(DeleteDoctor, '/doctors/<int:doctor_id>/delete')
 api.add_resource(CreateProgram, '/programs')
 api.add_resource(GetProgram, '/programs/<int:program_id>')
+api.add_resource(UpdateProgram, '/programs/<int:program_id>')
 api.add_resource(GetProgramsByDoctor, '/doctors/<int:doctor_id>/programs')
+api.add_resource(DeleteProgram, '/programs/<int:program_id>')
 api.add_resource(RegisterClient, '/clients')
 api.add_resource(UpdateClient, '/clients/<int:client_id>')
 api.add_resource(DeleteClient, '/clients/<int:client_id>')
 api.add_resource(EnrollClient, '/enroll')
+api.add_resource(UnenrollClient, '/clients/unenroll')
 api.add_resource(SearchClients, '/api/clients/search')
 api.add_resource(GetClientProfile, '/clients/<int:client_id>')
 api.add_resource(GetAllClients, '/clients')
@@ -67,7 +70,6 @@ def home():
 
 
     
-
 
 
 

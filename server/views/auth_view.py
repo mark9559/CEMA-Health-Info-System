@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from models import User, db, TokenBlocklist
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 from flask_restful import Resource
 from datetime import datetime, timezone
 from flask_restful import reqparse
@@ -95,7 +95,7 @@ class DeleteDoctor(Resource):
 
         return {'message': 'Doctor deleted successfully'}, 200
 
-# Login User
+#===Login User ====
 class Login(Resource):
     def post(self):
         data = request.get_json()
@@ -112,7 +112,7 @@ class Login(Resource):
         access_token = create_access_token(identity=str(user.id))
         return jsonify(access_token=access_token)
 
-# Get authenticated user
+# ===Get authenticated user====
 
 class AuthenticatedUser(Resource):
     @jwt_required()  # Ensure the user is authenticated with JWT
@@ -133,7 +133,7 @@ class AuthenticatedUser(Resource):
             "full_name": user.full_name
         })
 
-# Log Out
+# ====Log Out====
 class Logout(Resource):
     @jwt_required()
     def delete(self):
