@@ -1,5 +1,5 @@
 
-# CEMA-Health-Info-System - 24/04/2025
+# CEMA Health Infomation System - 24/04/2025
 
 The CEMA Health Information System is a lightweight and efficient backend API built using Python Flask and SQLite.
 It helps manage essential healthcare operations like clients, programs, doctors, and enrollments for a small healthcare facility or NGO.
@@ -85,13 +85,49 @@ python3 app.py
 
 ## API Endpoints
 
-Method | Endpoint | Description
-POST | /clients/register | Register a new client
-GET | /clients/search?q=<query> | Search for clients by name
-PUT | /clients/<int:client_id> | Update client details
-DELETE | /clients/<int:client_id> | Delete a client
-POST | /clients/enroll | Enroll a client into one or more programs
-DELETE | /clients/<int:client_id>/programs/<int:program_id> | Unenroll a client from a program
+---
+
+###  Clients
+
+| Method | Endpoint | Description |
+| :---- | :---- | :---- |
+| POST | `/clients/register` | Register a new client |
+| GET | `/clients/search?q=<query>` | Search for clients by name |
+| PUT | `/clients/<int:client_id>` | Update client details |
+| DELETE | `/clients/<int:client_id>` | Delete a client |
+| POST | `/clients/enroll` | Enroll a client into one or more programs |
+| DELETE | `/clients/<int:client_id>/programs/<int:program_id>` | Unenroll a client from a program |
+
+---
+
+###  Doctors
+
+| Method | Endpoint | Description |
+| :---- | :---- | :---- |
+| GET | `/doctors` | Get all doctors |
+| PUT | `/doctors/<int:doctor_id>` | Update doctor details |
+| DELETE | `/doctors/<int:doctor_id>` | Delete a doctor |
+
+---
+
+###  Programs
+
+| Method | Endpoint | Description |
+| :---- | :---- | :---- |
+| POST | `/programs` | Create a new health program |
+| GET | `/programs` | Get all health programs |
+| PUT | `/programs/<int:program_id>` | Update program details |
+| DELETE | `/programs/<int:program_id>` | Delete a program and automatically remove enrollments |
+
+---
+
+###  Authentication
+
+| Method | Endpoint | Description |
+| :---- | :---- | :---- |
+| POST | `/login` | Log in and get JWT access token |
+
+---
 
 ## Known Bugs
 
