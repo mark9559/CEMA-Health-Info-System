@@ -42,6 +42,9 @@ def check_if_token_in_blocklist(jwt_header, jwt_payload):
 
 # Adding resources
 api.add_resource(RegisterDoctor, '/register')
+api.add_resource(GetAllDoctors, '/doctors')
+api.add_resource(UpdateDoctor, '/doctors/<int:doctor_id>')
+api.add_resource(DeleteDoctor, '/doctors/<int:doctor_id>/delete')
 api.add_resource(CreateProgram, '/programs')
 api.add_resource(GetProgram, '/programs/<int:program_id>')
 api.add_resource(GetProgramsByDoctor, '/doctors/<int:doctor_id>/programs')
@@ -54,6 +57,7 @@ api.add_resource(GetAllPrograms, '/programs')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(AuthenticatedUser, '/user')
+
 
 @app.route('/')
 def home():

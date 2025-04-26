@@ -36,6 +36,65 @@ class RegisterDoctor(Resource):
         }, 201
 
 
+#===Fetchning all doctors===
+class GetAllDoctors(Resource):
+    @jwt_required()
+    def get(self):
+        doctors = User.query.all()
+
+        doctors_list = [{
+            'id': doctor.id,
+            'full_name': doctor.full_name,
+            #'email': doctor.email,
+            'username': doctor.username
+        } for doctor in doctors]
+
+        return {
+            'count': len(doctors_list),
+            'doctors': doctors_list
+        }, 200
+
+#===Updating a doctor details===
+class UpdateDoctor(Resource):
+    @jwt_required()
+    def put(self, doctor_id):
+        data = request.get_json()
+        full_name = data.get('full_name')
+        username = data.get('username')
+
+        doctor = User.query.get(doctor_id)
+        if not doctor:
+            return {'error': 'Doctor not found'}, 404
+
+        if full_name:
+            doctor.full_name = full_name
+        if username:
+            doctor.username = username
+
+        db.session.commit()
+
+        return {
+            'message': 'Doctor updated successfully',
+            'doctor': {
+                'id': doctor.id,
+                'full_name': doctor.full_name,
+                'username': doctor.username
+            }
+        }, 200
+
+#===Remove a doctor===
+class DeleteDoctor(Resource):
+    @jwt_required()
+    def delete(self, doctor_id):
+        doctor = User.query.get(doctor_id)
+        if not doctor:
+            return {'error': 'Doctor not found'}, 404
+
+        db.session.delete(doctor)
+        db.session.commit()
+
+        return {'message': 'Doctor deleted successfully'}, 200
+
 # Login User
 class Login(Resource):
     def post(self):
