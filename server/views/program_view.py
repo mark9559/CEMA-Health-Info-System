@@ -1,8 +1,7 @@
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
-from models import User, db, TokenBlocklist
+from flask_jwt_extended import  jwt_required
+from models import User, db, Enrollment
 from flask import Flask, request, jsonify
 from flask_restful import Resource
-from datetime import datetime, timezone
 from models import Program
 
 
@@ -41,6 +40,40 @@ class CreateProgram(Resource):
             }
         }, 201
 
+#=== Update a program's details===
+class UpdateProgram(Resource):
+    @jwt_required()
+    def put(self, program_id):
+        program = Program.query.get(program_id)
+        if not program:
+            return {'error': 'Program not found'}, 404
+
+        data = request.get_json()
+        name = data.get('name')
+        description = data.get('description')
+
+        if name:
+            # Check if a program with the new name already exists 
+            existing = Program.query.filter(Program.name == name, Program.id != program_id).first()
+            if existing:
+                return {'error': 'Another program with this name already exists'}, 409
+            program.name = name
+
+        if description:
+            program.description = description
+
+        db.session.commit()
+
+        return {
+            'message': 'Program details updated successfully',
+            'program': {
+                'id': program.id,
+                'name': program.name,
+                'description': program.description,
+                'doctor_id': program.doctor_id
+            }
+        }, 200
+
 
 # === Fetch Health Program by Doctor ===
 class GetProgramsByDoctor(Resource):
@@ -57,6 +90,7 @@ class GetProgramsByDoctor(Resource):
 
         return {'doctor': doctor.full_name, 'programs': programs}
 
+#===Fetch a single program===
 
 class GetProgram(Resource):
     def get(self, program_id):
@@ -64,7 +98,7 @@ class GetProgram(Resource):
         if not program:
             return {'error': 'Program not found'}, 404
 
-        doctor = User.query.get(program.doctor_id)  # Adjusted to use the program's doctor
+        doctor = User.query.get(program.doctor_id) 
         if not doctor:
             return {'error': 'Doctor not found'}, 404
 
@@ -103,3 +137,21 @@ class GetAllPrograms(Resource):
             output.append(program_data)
 
         return jsonify({'programs': output})
+
+# Delete a program and enrollments linked to it
+class DeleteProgram(Resource):
+    @jwt_required()
+    def delete(self, program_id):
+        program = Program.query.get(program_id)
+        
+        if not program:
+            return {'error': 'Program not found'}, 404
+        
+        # First, delete all enrollments linked to this program
+        Enrollment.query.filter_by(program_id=program.id).delete()
+
+        # Then, delete the program itself
+        db.session.delete(program)
+        db.session.commit()
+
+        return {'message': 'Program and its enrollments deleted successfully'}, 200
