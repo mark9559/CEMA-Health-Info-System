@@ -1,8 +1,8 @@
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
-from models import User, db, TokenBlocklist, Client, Enrollment, Program
+from flask_jwt_extended import jwt_required
+from models import db, Client, Enrollment, Program
 from flask import Flask, request, jsonify
 from flask_restful import Resource
-from datetime import datetime, timezone
+
 
 
 # === Register New Client ===
@@ -112,6 +112,28 @@ class EnrollClient(Resource):
             'client_id': client.id,
             'enrolled_programs': enrolled_programs
         }, 200
+
+
+#=== Unenroll client from a program===
+class UnenrollClient(Resource):
+    @jwt_required()
+    def delete(self):
+        data = request.get_json()
+        client_id = data.get('client_id')
+        program_id = data.get('program_id')
+
+        if not client_id or not program_id:
+            return {'error': 'client_id and program_id are required'}, 400
+
+        enrollment = Enrollment.query.filter_by(client_id=client_id, program_id=program_id).first()
+        
+        if not enrollment:
+            return {'error': 'Enrollment not found'}, 404
+
+        db.session.delete(enrollment)
+        db.session.commit()
+
+        return {'message': 'Client successfully unenrolled from program'}, 200
 
 
 
