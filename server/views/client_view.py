@@ -42,37 +42,32 @@ class EnrollClient(Resource):
         client_id = data.get('client_id')
         program_ids = data.get('program_ids')
 
-        # Validate input
         if not client_id or not program_ids:
-            return jsonify({'error': 'client_id and program_ids are required'}), 400
+            return {'error': 'client_id and program_ids are required'}, 400
 
-        # Find the client by ID
         client = Client.query.get(client_id)
         if not client:
-            return jsonify({'error': 'Client not found'}), 404
+            return {'error': 'Client not found'}, 404
 
         enrolled_programs = []
-
-        # Iterate over the program IDs and enroll the client
         for pid in program_ids:
             program = Program.query.get(pid)
             if not program:
-                continue  # Skip if program doesn't exist
+                continue  # skip if program doesn't exist
 
-            existing_enrollment = Enrollment.query.filter_by(client_id=client.id, program_id=program.id).first()
-            if not existing_enrollment:
+            existing = Enrollment.query.filter_by(client_id=client.id, program_id=program.id).first()
+            if not existing:
                 enrollment = Enrollment(client_id=client.id, program_id=program.id)
                 db.session.add(enrollment)
                 enrolled_programs.append(program.name)
 
         db.session.commit()
 
-        # Return the response as JSON
-        return jsonify({
+        return {
             'message': 'Client enrolled in selected programs successfully',
             'client_id': client.id,
             'enrolled_programs': enrolled_programs
-        }), 200
+        }, 200
 
 
 
@@ -83,9 +78,12 @@ class SearchClients(Resource):
         query = request.args.get('q', '').strip()
 
         if not query:
-            return jsonify({'error': 'Search query is required'}), 400
+            return {'error': 'Search query is required'}, 400
 
         results = Client.query.filter(Client.full_name.ilike(f'%{query}%')).all()
+
+        if not results:
+            return ({'error': 'Client not found'}), 404
 
         clients = [{
             'id': client.id,
@@ -94,10 +92,10 @@ class SearchClients(Resource):
             'gender': client.gender
         } for client in results]
 
-        return ({
+        return {
             'count': len(clients),
             'results': clients
-        }), 200
+        }, 200
 
 
 # === View Client Profile (API) ===
