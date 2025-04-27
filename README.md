@@ -20,6 +20,7 @@ By:
 - [API Endpoints](#api-endpoints)
 - [Known Bugs](#known-bugs)
 - [Technologies Used](#technologies-used)
+- [Future Improvements](#future-improvements)
 - [Support and contact details](#support-and-contact-details)
 - [License](#license)
 
