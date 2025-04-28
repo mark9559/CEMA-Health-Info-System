@@ -84,6 +84,16 @@ python3 app.py
 
 6. And your backend is up and running successfully.
 
+7. Use the credentials below to login and  test the API endpoints.
+
+```sh
+{
+  "username": "drmark",
+  "password": "securepassword123"
+}
+ 
+```
+
 ## API Endpoints
 
 ---
